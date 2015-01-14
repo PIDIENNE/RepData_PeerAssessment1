@@ -1,18 +1,11 @@
----
-title: "Reproducible Research: Peer Assessment 1"
-output: 
-  html_document:
-    keep_md: true
----
-```{r, echo=FALSE, results="hide", warning=FALSE, message=FALSE}
-library(dplyr)
-library(stringr)
-```
+# Reproducible Research: Peer Assessment 1
+
 
 ## Loading and preprocessing the data
 1. Load the data (i.e. read.csv())
 2. Process/transform the data (if necessary) into a format suitable for your analysis
-```{r}
+
+```r
 ### Loading raw data (already in the repository, compressed)
 unzip("activity.zip", overwrite = TRUE)  
 act_raw <- read.csv("activity.csv")  
@@ -21,35 +14,61 @@ act_raw$date <- as.Date(act_raw$date, "%Y-%m-%d")
 #act_raw$interval <- as.Date(act_raw$interval, "%HH%MM")
 #act_raw$interval <- strptime(str_pad(as.character(act_raw$interval), width=4, side = "left", pad = "0"), "%H%M")
 act_raw$interval <- str_pad(as.character(act_raw$interval), width=4, side = "left", pad = "0")
-
 ```
 
 ## What is mean total number of steps taken per day?
 1. Make a histogram of the total number of steps taken each day
 2. Calculate and report the mean and median total number of steps taken per day
-```{r}
+
+```r
 #act_raw$interval <- as.numeric(act_raw$interval)
 act_date <- group_by(act_raw, date)
 act_sum <- summarize(act_date, passi=sum(steps, na.rm = TRUE))
 h1 <- hist(act_sum$passi, xlab="Steps", main="Steps per day", col=rgb(1,0,0,1/4))
+```
+
+![](./PA1_template_files/figure-html/unnamed-chunk-3-1.png) 
+
+```r
 mean(act_sum$passi)
+```
+
+```
+## [1] 9354.23
+```
+
+```r
 median(act_sum$passi)
+```
+
+```
+## [1] 10395
 ```
  
 
 ## What is the average daily activity pattern?
 1. Make a time series plot (i.e. type = "l") of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all days (y-axis)
 2. Which 5-minute interval, on average across all the days in the dataset, contains the maximum number of steps?
-```{r}
+
+```r
 act_int <- group_by(act_raw, interval)
 act_sum <- summarize(act_int, passi=sum(steps, na.rm = TRUE))
 # Conversion needed only for plot purposes
 act_sum$interval <- strptime(str_pad(as.character(act_sum$interval), width=4, side = "left", pad = "0"), "%H%M")
 plot(act_sum, xlab="Time", ylab="Total steps", main="Steps throughout the day")
+```
+
+![](./PA1_template_files/figure-html/unnamed-chunk-4-1.png) 
+
+```r
 #axis.Date(side = 1, act_sum$interval, format = "%H:%M")
 
 max_steps_time <- act_sum$interval[which.max(act_sum$passi)]
 format(max_steps_time, "%H:%M")
+```
+
+```
+## [1] "08:35"
 ```
 
 
@@ -65,9 +84,17 @@ Note that there are a number of days/intervals where there are missing values (c
 
 4. Make a histogram of the total number of steps taken each day and Calculate and report the mean and median total number of steps taken per day. Do these values differ from the estimates from the first part of the assignment? What is the impact of imputing missing data on the estimates of the total daily number of steps?
 
-```{r}
+
+```r
 number_of_NA <- sum(is.na(act_raw$steps))
 number_of_NA 
+```
+
+```
+## [1] 2304
+```
+
+```r
 # Compute the mean of each non-NA time interval to replace the NAs
 act_mean <- summarize(act_int, media=mean(steps, na.rm=TRUE))
 # Replace the NAs in the raw dataset
@@ -97,24 +124,53 @@ act_na_mean_date <- group_by(act_na_mean, date)
 act_sum_na_mean <- summarize(act_na_mean_date, passi=sum(steps, na.rm = TRUE))
 
 h2 <- hist(act_sum_na_mean$passi, xlab="Steps", main="Steps per day", col=rgb(0,0,1,1/4))
-plot( h2, col=rgb(0,0,1,1/4), xlab="Steps", main="Comparison with and without NAs")
-plot( h1, col=rgb(1,0,0,1/4), add=T)
+```
 
+![](./PA1_template_files/figure-html/unnamed-chunk-5-1.png) 
+
+```r
+plot( h1, col=rgb(0,0,1,1/4), xlab="Steps", main="Comparison with and without NAs")
+plot( h2, col=rgb(1,0,0,1/4), add=T)
+```
+
+![](./PA1_template_files/figure-html/unnamed-chunk-5-2.png) 
+
+```r
 mean(act_sum_na_mean$passi)
-median(act_sum_na_mean$passi)
+```
 
+```
+## [1] 10766.19
+```
+
+```r
+median(act_sum_na_mean$passi)
+```
+
+```
+## [1] 10766.19
 ```
 ## Are there differences in activity patterns between weekdays and weekends?
 ### The analysis is based on the dataset with estimated NA values
 
-```{r}
+
+```r
 # CHange the language to avoid weekdays in French...
 language <- "English" 
 Sys.setlocale("LC_TIME", language) 
+```
 
+```
+## [1] "English_United States.1252"
+```
+
+```r
 # Create two subset, weekend and weekdays
 act_weekend <- act_na_mean_date[weekdays(act_na_mean_date$date) %in% c("Sunday", "Saturday"),]
 act_week    <- act_na_mean_date[!(weekdays(act_na_mean_date$date) %in% c("Sunday", "Saturday")),]
+
+
+#par(mfrow = c(1, 2)
 
 act_int_weekend <- group_by(act_weekend, interval)
 act_sum_weekend <- summarize(act_int_weekend, passi=sum(steps, na.rm = TRUE))
@@ -122,13 +178,17 @@ act_sum_weekend <- summarize(act_int_weekend, passi=sum(steps, na.rm = TRUE))
 act_sum_weekend$interval <- strptime(str_pad(as.character(act_sum_weekend$interval), width=4, side = "left", pad = "0"), "%H%M")
 
 plot(act_sum_weekend, xlab="Time", ylab="Total steps", main="Steps throughout the day at weekend")
+```
 
+![](./PA1_template_files/figure-html/unnamed-chunk-6-1.png) 
+
+```r
 act_int_week <- group_by(act_week, interval)
 act_sum_week <- summarize(act_int_week, passi=sum(steps, na.rm = TRUE))
 # Conversion needed only for plot purposes
 act_sum_week$interval <- strptime(str_pad(as.character(act_sum_week$interval), width=4, side = "left", pad = "0"), "%H%M")
 
 plot(act_sum_week, xlab="Time", ylab="Total steps", main="Steps throughout the day during weekdays")
-
-
 ```
+
+![](./PA1_template_files/figure-html/unnamed-chunk-6-2.png) 
