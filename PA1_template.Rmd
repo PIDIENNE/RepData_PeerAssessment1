@@ -112,6 +112,8 @@ median(act_sum_na_mean$passi)
 language <- "English" 
 Sys.setlocale("LC_TIME", language) 
 
+par(mfrow = c(1, 2))
+
 # Create two subset, weekend and weekdays
 act_weekend <- act_na_mean_date[weekdays(act_na_mean_date$date) %in% c("Sunday", "Saturday"),]
 act_week    <- act_na_mean_date[!(weekdays(act_na_mean_date$date) %in% c("Sunday", "Saturday")),]
@@ -121,14 +123,14 @@ act_sum_weekend <- summarize(act_int_weekend, passi=sum(steps, na.rm = TRUE))
 # Conversion needed only for plot purposes
 act_sum_weekend$interval <- strptime(str_pad(as.character(act_sum_weekend$interval), width=4, side = "left", pad = "0"), "%H%M")
 
-plot(act_sum_weekend, xlab="Time", ylab="Total steps", main="Steps throughout the day at weekend")
+plot(act_sum_weekend, xlab="Time", ylab="Total steps", main="Activity during weekend")
 
 act_int_week <- group_by(act_week, interval)
 act_sum_week <- summarize(act_int_week, passi=sum(steps, na.rm = TRUE))
 # Conversion needed only for plot purposes
 act_sum_week$interval <- strptime(str_pad(as.character(act_sum_week$interval), width=4, side = "left", pad = "0"), "%H%M")
 
-plot(act_sum_week, xlab="Time", ylab="Total steps", main="Steps throughout the day during weekdays")
+plot(act_sum_week, xlab="Time", ylab="Total steps", main="Activity during weekdays")
 
 
 ```

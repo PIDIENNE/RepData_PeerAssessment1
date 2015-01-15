@@ -1,4 +1,9 @@
-# Reproducible Research: Peer Assessment 1
+---
+title: "Reproducible Research: Peer Assessment 1"
+output: 
+  html_document:
+    keep_md: true
+---
 
 
 ## Loading and preprocessing the data
@@ -27,7 +32,7 @@ act_sum <- summarize(act_date, passi=sum(steps, na.rm = TRUE))
 h1 <- hist(act_sum$passi, xlab="Steps", main="Steps per day", col=rgb(1,0,0,1/4))
 ```
 
-![](./PA1_template_files/figure-html/unnamed-chunk-3-1.png) 
+![plot of chunk unnamed-chunk-3](figure/unnamed-chunk-3-1.png) 
 
 ```r
 mean(act_sum$passi)
@@ -58,7 +63,7 @@ act_sum$interval <- strptime(str_pad(as.character(act_sum$interval), width=4, si
 plot(act_sum, xlab="Time", ylab="Total steps", main="Steps throughout the day")
 ```
 
-![](./PA1_template_files/figure-html/unnamed-chunk-4-1.png) 
+![plot of chunk unnamed-chunk-4](figure/unnamed-chunk-4-1.png) 
 
 ```r
 #axis.Date(side = 1, act_sum$interval, format = "%H:%M")
@@ -126,14 +131,14 @@ act_sum_na_mean <- summarize(act_na_mean_date, passi=sum(steps, na.rm = TRUE))
 h2 <- hist(act_sum_na_mean$passi, xlab="Steps", main="Steps per day", col=rgb(0,0,1,1/4))
 ```
 
-![](./PA1_template_files/figure-html/unnamed-chunk-5-1.png) 
+![plot of chunk unnamed-chunk-5](figure/unnamed-chunk-5-1.png) 
 
 ```r
-plot( h1, col=rgb(0,0,1,1/4), xlab="Steps", main="Comparison with and without NAs")
-plot( h2, col=rgb(1,0,0,1/4), add=T)
+plot( h2, col=rgb(0,0,1,1/4), xlab="Steps", main="Comparison with and without NAs")
+plot( h1, col=rgb(1,0,0,1/4), add=T)
 ```
 
-![](./PA1_template_files/figure-html/unnamed-chunk-5-2.png) 
+![plot of chunk unnamed-chunk-5](figure/unnamed-chunk-5-2.png) 
 
 ```r
 mean(act_sum_na_mean$passi)
@@ -165,30 +170,25 @@ Sys.setlocale("LC_TIME", language)
 ```
 
 ```r
+par(mfrow = c(1, 2))
+
 # Create two subset, weekend and weekdays
 act_weekend <- act_na_mean_date[weekdays(act_na_mean_date$date) %in% c("Sunday", "Saturday"),]
 act_week    <- act_na_mean_date[!(weekdays(act_na_mean_date$date) %in% c("Sunday", "Saturday")),]
-
-
-#par(mfrow = c(1, 2)
 
 act_int_weekend <- group_by(act_weekend, interval)
 act_sum_weekend <- summarize(act_int_weekend, passi=sum(steps, na.rm = TRUE))
 # Conversion needed only for plot purposes
 act_sum_weekend$interval <- strptime(str_pad(as.character(act_sum_weekend$interval), width=4, side = "left", pad = "0"), "%H%M")
 
-plot(act_sum_weekend, xlab="Time", ylab="Total steps", main="Steps throughout the day at weekend")
-```
+plot(act_sum_weekend, xlab="Time", ylab="Total steps", main="Activity during weekend")
 
-![](./PA1_template_files/figure-html/unnamed-chunk-6-1.png) 
-
-```r
 act_int_week <- group_by(act_week, interval)
 act_sum_week <- summarize(act_int_week, passi=sum(steps, na.rm = TRUE))
 # Conversion needed only for plot purposes
 act_sum_week$interval <- strptime(str_pad(as.character(act_sum_week$interval), width=4, side = "left", pad = "0"), "%H%M")
 
-plot(act_sum_week, xlab="Time", ylab="Total steps", main="Steps throughout the day during weekdays")
+plot(act_sum_week, xlab="Time", ylab="Total steps", main="Activity during weekdays")
 ```
 
-![](./PA1_template_files/figure-html/unnamed-chunk-6-2.png) 
+![plot of chunk unnamed-chunk-6](figure/unnamed-chunk-6-1.png) 
